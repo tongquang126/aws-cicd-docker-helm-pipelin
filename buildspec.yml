@@ -7,22 +7,22 @@ env:
 phases:
   pre_build:
     commands:
-      - echo "Pre-build: logging in to ECR"
-      - echo "Region: $AWS_DEFAULT_REGION"
-      - aws ecr get-login-password --region "$AWS_DEFAULT_REGION" | docker login --username AWS --password-stdin "$ECR_REPO_URI"
-      - COMMIT_ID=$(echo "$CODEBUILD_RESOLVED_SOURCE_VERSION" | cut -c 1-7)
+      - echo "Pre-build logging in to ECR"
+      - echo "Region $AWS_DEFAULT_REGION"
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPO_URI
+      - COMMIT_ID=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=${COMMIT_ID:-latest}
       - echo "Using tag $IMAGE_TAG"
 
   build:
     commands:
       - echo "Building Docker image"
-      - docker build -t "$IMAGE_NAME:$IMAGE_TAG" .
+      - docker build -t $IMAGE_NAME:$IMAGE_TAG .
 
   post_build:
     commands:
       - echo "Pushing image to ECR"
-      - docker push "$ECR_REPO_URI:$IMAGE_TAG"
+      - docker push $ECR_REPO_URI:$IMAGE_TAG
       - printf '[{"name":"%s","imageUri":"%s"}]' "$IMAGE_NAME" "$ECR_REPO_URI:$IMAGE_TAG" > imagedefinitions.json
 
 artifacts:
