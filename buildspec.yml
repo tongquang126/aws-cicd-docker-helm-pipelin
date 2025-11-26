@@ -34,8 +34,7 @@ phases:
     commands:
       - echo "Build phase - Build Docker image"
       - docker build -t "$IMAGE_NAME:$IMAGE_TAG" .
-
-      # Tag image với full ECR URI
+      - echo "Tagging image with ECR URI"
       - docker tag "$IMAGE_NAME:$IMAGE_TAG" "$ECR_REPO_URI:$IMAGE_TAG"
 
   post_build:
