@@ -50,7 +50,7 @@ Resources:
               SSEAlgorithm: AES256
 
 
-  ###########################################
+  ########################################### 
   # IAM ROLE FOR CODEBUILD
   ###########################################
   CodeBuildRole:
@@ -255,6 +255,10 @@ Outputs:
   PipelineName:
     Description: Pipeline name
     Value: !Ref CodePipeline
+
+  PipelineUrl:
+    Description: URL to the CodePipeline console
+    Value: !Sub "https://${AWS::Region}.console.aws.amazon.com/codesuite/codepipeline/pipelines/${CodePipeline}/view"
 
   ArtifactBucketName:
     Description: S3 artifact bucket name
