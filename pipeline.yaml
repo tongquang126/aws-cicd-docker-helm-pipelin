@@ -190,6 +190,45 @@ Resources:
 
 
   ###########################################
+  # IAM ROLE FOR LAMBDA FUNCTION
+  ###########################################
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "LambdaExecutionRole-${AWS::StackName}"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  ###########################################
+  # LAMBDA FUNCTION
+  ###########################################
+  VerificationFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "verification-function-${AWS::StackName}"
+      Runtime: python3.11
+      Handler: index.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        ZipFile: |
+          def lambda_handler(event, context):
+              print("Hello World from Lambda!")
+              return {
+                  'statusCode': 200,
+                  'body': 'Hello World!'
+              }
+      Description: "Simple hello world Lambda function"
+      Timeout: 30
+      MemorySize: 128
+
+  ###########################################
   # IAM ROLE FOR CLOUDFORMATION (Self-mutating)
   ###########################################
   CloudFormationRole:
@@ -324,3 +363,11 @@ Outputs:
   ArtifactBucketName:
     Description: S3 artifact bucket name
     Value: !Ref ArtifactBucket
+
+  VerificationFunctionName:
+    Description: Lambda verification function name
+    Value: !Ref VerificationFunction
+
+  VerificationFunctionArn:
+    Description: Lambda verification function ARN
+    Value: !GetAtt VerificationFunction.Arn
